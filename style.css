@@ -39,10 +39,12 @@
 }
 
 .separator {
-    height: 20px;
-    width: 1px;
-    background-color: rgb(13, 13, 13);
+    height: 40px;
     margin: 20px 0;
+    opacity: 0.9;
+    pointer-events: none;
+    user-select: none;
+    transform: rotate(-45deg);
 }
 
 #pow_button{
@@ -70,8 +72,7 @@
 }
 
 .loading {
-    height: 18px;
-    width: 18px;
+    height: 20px;
     animation: rotate 1s infinite linear;
     pointer-events: none;
     user-select: none;

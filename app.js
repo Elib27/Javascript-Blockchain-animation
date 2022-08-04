@@ -107,3 +107,4 @@ addHTMLBlock(GenesisBlock)
 POWbutton.addEventListener('click', toogleBlockchain)
 
 // add loading animation when mining
+// replacer trait par chaine
