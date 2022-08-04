@@ -73,6 +73,7 @@
 
 .loading {
     height: 20px;
+    margin-top: 10px;
     animation: rotate 1s infinite linear;
     pointer-events: none;
     user-select: none;
