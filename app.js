@@ -1,5 +1,9 @@
 const POWbutton = document.querySelector('#pow_button')
 const blocksContainer = document.querySelector('.blocks_container')
+const difficultyButtons = document.querySelectorAll('#easy, #medium, #hard')
+const resetButton = document.querySelector('#reset')
+const scrollTopButton = document.querySelector('.scroll-top')
+
 let Block = class {
     constructor(height, time, transactions, previousHash, nonce) {
         this.height = height;
@@ -37,44 +41,45 @@ let Block = class {
     }
 }
 
-let GenesisBlock = new Block(1, 1518098983, [{from: 'genesis', to: 'genesis', amount: 0}], '00000000000000000000000000000000000000000000000000000000000000', 2984)
+let GenesisBlock = new Block(1, 1659611168, [{from: 'alice', to: 'bob', amount: 1}], '0000000000000000000000000000000000000000000000000000000000000000', 42361)
 
 let BlockChain = [GenesisBlock]
+let maxHashValue = '0000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+let BlockchainEnabled = false
+let reset = false
+let isMining = false
 
 async function ProofOfWork(blockToMine) {
     let currentBlockHash = await blockToMine.calculateHash()
-    while (currentBlockHash > '0000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'){
-        blockToMine.increaseNonce()
+    isMining = true
+    while ((currentBlockHash > maxHashValue ) && !reset){
+        blockToMine.increaseNonce() 
         currentBlockHash = await blockToMine.calculateHash()
+    }
+    isMining = false
+    if (POWbutton.classList.contains('disabled')){
+        POWbutton.classList.remove('disabled')
     }
     return blockToMine
 }
 
-
 async function createRandomBlock(){
     const height = BlockChain.at(-1).height + 1
     const time = Math.floor(Date.now() / 1000)
-    const transactions = [{from: 'alice', to: 'bob', amount: Math.round(Math.random() * 10000) / 1000}, {from: 'bob', to: 'jean', amount: Math.round(Math.random() * 10000) / 1000}]
+    const transactionsNumber = Math.floor(Math.random() * 10) + 1
+    const transactions = []
+    for (let i = 0; i < transactionsNumber; i++){
+        const names = ['bob', 'alice', 'sophie', 'suzie', 'marc', 'josuha']
+        const sender = names[Math.floor(Math.random() * 6 - 0.01)]
+        const recipient = names[Math.floor(Math.random() * 6 - 0.01)]
+        const amount = Math.round(Math.random() * 10000) / 1000
+        const transaction = {from: sender, to: recipient, amount}
+        transactions.push(transaction)
+    }
     const previousHash = await BlockChain.at(-1).calculateHash()
     const nonce = 0
     return new Block(height, time, transactions, previousHash, nonce)
 }
-
-let BlockchainEnabled = false
-
-async function addBlocksToBlockChain(){
-    while (BlockchainEnabled){
-        const block = await createRandomBlock()
-        addSeparator()
-        addHTMLLoadingBlock(block)
-        await ProofOfWork(block)
-        BlockChain.push(block)
-        removeLoadingBlock()
-        addHTMLBlock(block)
-        console.log(`Block ${block.height} added`)
-    }
-}
-
 
 function addHTMLBlock(block){
     const blockHTML = document.createElement('div')
@@ -86,6 +91,7 @@ function addHTMLBlock(block){
     `
     blocksContainer.appendChild(blockHTML)
 }
+
 function addHTMLLoadingBlock(block){
     const blockHTML = document.createElement('div')
     blockHTML.classList.value = 'block'
@@ -112,22 +118,73 @@ function addSeparator() {
     blocksContainer.appendChild(separator)
 }
 
-function toogleBlockchain(){
-    BlockchainEnabled = !BlockchainEnabled
-    if (BlockchainEnabled){
-        POWbutton.innerHTML = 'Stop Mining'
-        POWbutton.classList.value = 'mining'
-        addBlocksToBlockChain()
-    } else {
-        POWbutton.innerHTML = 'Start Mining'
-        POWbutton.classList.value = 'stop'
+async function addBlocksToBlockChain(){
+    while (BlockchainEnabled){
+        const block = await createRandomBlock()
+        addSeparator()
+        addHTMLLoadingBlock(block)
+        await ProofOfWork(block)
+        if (!reset){
+            BlockChain.push(block)
+            removeLoadingBlock()
+            addHTMLBlock(block)
+            console.log(`Block ${block.height} added`)
+        }
+        else {
+            reset = false
+        }
     }
+}
+
+
+function toogleBlockchain(){
+        if (BlockchainEnabled){
+            BlockchainEnabled = false
+            POWbutton.innerHTML = 'Start Mining'
+            POWbutton.classList.value = 'stop disabled'
+        } else {
+            if (!isMining){
+                BlockchainEnabled = true
+                POWbutton.innerHTML = 'Stop Mining'
+                POWbutton.classList.value = 'mining'
+                reset = false
+                addBlocksToBlockChain()
+            }
+        }
 }
 
 addHTMLBlock(GenesisBlock)
 
 POWbutton.addEventListener('click', toogleBlockchain)
 
-// améliorer structure du bloc
-// améliorer aléatoire transactions
-// ajouter arbre de merkel
+function resetBlockChain() {
+    BlockChain = [GenesisBlock]
+    reset = true
+    blocksContainer.innerHTML = ''
+    addHTMLBlock(GenesisBlock)
+}
+
+resetButton.addEventListener('click', resetBlockChain)
+
+function changeMiningDifficulty(e) {
+    newMiningDifficulty = e.target.value
+    switch(newMiningDifficulty){
+        case 'easy':
+            maxHashValue = '000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+            break
+        case 'medium':
+            maxHashValue = '0000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+            break
+        case 'hard':
+            maxHashValue = '00000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+            break
+    }
+}
+
+difficultyButtons.forEach((button) => {
+    button.addEventListener('click', changeMiningDifficulty)
+})
+
+scrollTopButton.addEventListener('click', () => {
+    window.scroll({top: 0, behavior: 'smooth'})
+})

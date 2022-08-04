@@ -1,3 +1,8 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
 #title{
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
@@ -48,6 +53,7 @@
 }
 
 #pow_button{
+    position: relative;
     height: 50px;
     width: 150px;
     font-family: sans-serif;
@@ -61,13 +67,30 @@
     background-color: rgba(85, 199, 102, 0.8);
     cursor: pointer;
 }
-#pow_button.mining{
+#pow_button.mining {
     background-color: rgba(232, 73, 73, 0.8);
 }
-#pow_button.stop:hover{
+#pow_button.disabled {
+    cursor: not-allowed;
+}
+#pow_button.disabled:hover::after {
+    content: 'You should wait mining finished before start mining again';
+    position: absolute;
+    font-weight: 300;
+    font-size: 12px;
+    width: 150%;
+    top: 105%;
+    left: 50%;
+    padding: 4px;
+    transform: translateX(-50%);
+    background-color: rgb(85, 85, 85);
+    color: #fff;
+    border-radius: 6px;
+}
+#pow_button.stop:hover {
     background-color: rgba(85, 199, 102, 1);
 }
-#pow_button.mining:hover{
+#pow_button.mining:hover {
     background-color: rgba(232, 73, 73, 1);
 }
 
@@ -86,4 +109,74 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+#reset {
+    position: fixed;
+    top: 87px;
+    right: 50px;
+    height: 50px;
+    width: 150px;
+    font-family: sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-out;
+    background-color: rgba(232, 73, 73, 0.8);
+    cursor: pointer;
+}
+#reset:hover{
+    background-color: rgba(232, 73, 73, 1);
+}
+
+
+.configuration {
+    padding: 10px 20px;
+    background-color: rgb(184, 184, 184);
+    border-bottom-right-radius: 8px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-family:'Courier New', Courier, monospace;
+}
+
+.configuration p {
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+.configuration .input {
+    margin-bottom: 4px;
+}
+
+.configuration .input * {
+    cursor: pointer;
+}
+
+.scroll-top {
+    position: fixed;
+    bottom: 30px;
+    right: 50px;
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    transition: all 0.2s ease-out;
+    background-color: rgba(215, 215, 215, 0.8);
+    cursor: pointer;
+}
+
+.scroll-top:hover {
+    background-color: rgba(215, 215, 215, 1);
+    transform: scale(1.02);
+}
+
+.arrow {
+    height: 14px;
+    width: 14px;
+    transform: translateY(1px);
 }
